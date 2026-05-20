@@ -1,0 +1,1 @@
+export const TOASTER_TIMEOUT_SESSION=5

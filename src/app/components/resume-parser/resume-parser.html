@@ -1,0 +1,99 @@
+<div class="container py-4">
+
+  <!-- TITLE -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">Resume Parser</h2>
+    <p class="text-muted">Upload resume and analyze with job description</p>
+  </div>
+
+  <!-- UPLOAD CARD -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+
+      <h5 class="card-title">Upload Resume (PDF only)</h5>
+
+      <input
+        type="file"
+        class="form-control"
+        accept="application/pdf"
+        (change)="onFileSelected($event)"
+      />
+
+      <small class="text-muted">
+        Only PDF format is supported
+      </small>
+
+      @if (selectedFile) {
+        <div class="alert alert-success mt-2 py-2">
+          📄 {{ selectedFile.name }}
+        </div>
+      }
+
+    </div>
+  </div>
+
+  <!-- JOB DESCRIPTION -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-body">
+
+      <h5 class="card-title">Job Description</h5>
+
+      <textarea
+        class="form-control"
+        rows="6"
+        [(ngModel)]="jobDescription"
+        placeholder="Paste job description here..."
+      ></textarea>
+
+    </div>
+  </div>
+
+  <!-- BUTTON -->
+  <div class="d-grid mb-4">
+    <button
+      class="btn btn-primary"
+      (click)="analyzeResume()"
+      [disabled]="!selectedFile || !jobDescription || loading"
+    >
+      @if (loading) {
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Analyzing...
+      } @else {
+        Analyze Resume
+      }
+    </button>
+  </div>
+
+  <!-- RESULT -->
+  @if (result) {
+    <div class="row g-3">
+
+      <!-- FULL RESULT STRING -->
+      @if (result) {
+        <div class="row g-3">
+
+          <div class="col-12">
+            <div class="card shadow-sm">
+
+              <div class="card-header bg-dark text-white">
+                Analysis Result
+              </div>
+
+              <div class="card-body">
+
+                <markdown>
+                  {{ result }}
+                </markdown>
+
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

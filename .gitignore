@@ -41,3 +41,11 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+
+# Environment config files
+**/config/config.*.ts
+**/config/config.ts
+
+# But keep template/example files
+!**/config/config.example.ts
