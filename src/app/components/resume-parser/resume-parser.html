@@ -1,99 +1,134 @@
-<div class="container py-4">
+<!-- ══════════ SCENE ══════════ -->
+<div class="rp-scene">
+  <div class="rp-container">
 
-  <!-- TITLE -->
-  <div class="text-center mb-4">
-    <h2 class="fw-bold">Resume Parser</h2>
-    <p class="text-muted">Upload resume and analyze with job description</p>
-  </div>
+    <!-- ── HEADER ── -->
+    <div class="rp-header">
+      <div class="rp-eyebrow">AI-Powered Analysis</div>
+      <h1 class="rp-title">Resume Parser</h1>
+      <p class="rp-subtitle">Upload a résumé and match it against any job description instantly</p>
+    </div>
 
-  <!-- UPLOAD CARD -->
-  <div class="card shadow-sm mb-3">
-    <div class="card-body">
+    <!-- ── STEP 1: FILE UPLOAD ── -->
+    <div class="rp-card rp-card-1">
+      <span class="rp-step-badge">STEP 01</span>
+      <p class="rp-card-title">
+        <span class="rp-card-title-dot"></span>
+        Upload Résumé
+      </p>
 
-      <h5 class="card-title">Upload Resume (PDF only)</h5>
-
-      <input
-        type="file"
-        class="form-control"
-        accept="application/pdf"
-        (change)="onFileSelected($event)"
-      />
-
-      <small class="text-muted">
-        Only PDF format is supported
-      </small>
+      <div
+        class="rp-dropzone"
+        [class.drag-over]="isDragging"
+        (dragover)="$event.preventDefault(); isDragging = true"
+        (dragleave)="isDragging = false"
+        (drop)="onDrop($event)"
+      >
+        <input
+          type="file"
+          accept="application/pdf"
+          (change)="onFileSelected($event)"
+        />
+        <div class="rp-upload-icon">📄</div>
+        <span class="rp-upload-label">Drop your PDF here</span>
+        <span class="rp-upload-hint">or click to browse &bull; PDF only</span>
+      </div>
 
       @if (selectedFile) {
-        <div class="alert alert-success mt-2 py-2">
-          📄 {{ selectedFile.name }}
+        <div class="rp-file-chip">
+          <span class="rp-file-chip-icon">✓</span>
+          <span class="rp-file-chip-name">{{ selectedFile.name }}</span>
+          <span class="rp-file-chip-size">{{ (selectedFile.size / 1024).toFixed(0) }} KB</span>
         </div>
       }
-
     </div>
-  </div>
 
-  <!-- JOB DESCRIPTION -->
-  <div class="card shadow-sm mb-3">
-    <div class="card-body">
+    <div class="rp-connector"></div>
 
-      <h5 class="card-title">Job Description</h5>
+    <!-- ── STEP 2: JOB DESCRIPTION ── -->
+    <div class="rp-card rp-card-2">
+      <span class="rp-step-badge">STEP 02</span>
+      <p class="rp-card-title">
+        <span class="rp-card-title-dot rp-card-title-dot--teal"></span>
+        Job Description
+      </p>
 
       <textarea
-        class="form-control"
-        rows="6"
+        class="rp-textarea"
+        rows="7"
         [(ngModel)]="jobDescription"
-        placeholder="Paste job description here..."
+        placeholder="Paste the full job description here — requirements, responsibilities, and skills..."
       ></textarea>
 
+      <div class="rp-char-count">{{ jobDescription?.length || 0 }} characters</div>
     </div>
-  </div>
 
-  <!-- BUTTON -->
-  <div class="d-grid mb-4">
-    <button
-      class="btn btn-primary"
-      (click)="analyzeResume()"
-      [disabled]="!selectedFile || !jobDescription || loading"
-    >
-      @if (loading) {
-        <span class="spinner-border spinner-border-sm me-2"></span>
-        Analyzing...
-      } @else {
-        Analyze Resume
-      }
-    </button>
-  </div>
+    <div class="rp-connector"></div>
 
-  <!-- RESULT -->
-  @if (result) {
-    <div class="row g-3">
+    <!-- ── STEP 3: ANALYZE BUTTON ── -->
+    <div class="rp-card-btn-wrap rp-card-3">
+      <button
+        class="rp-btn"
+        (click)="analyzeResume()"
+        [disabled]="!selectedFile || !jobDescription || loading"
+      >
+        @if (loading) {
+          <div class="rp-btn-inner">
+            <div class="rp-spinner"></div>
+            <span>Analyzing…</span>
+          </div>
+          <div class="rp-thinking">
+            <div class="rp-thinking-dot"></div>
+            <div class="rp-thinking-dot"></div>
+            <div class="rp-thinking-dot"></div>
+            <span class="rp-thinking-label">Processing with AI</span>
+          </div>
+        } @else {
+          <div class="rp-btn-inner">
+            <span>⚡</span>
+            <span>Analyze Résumé</span>
+            <span class="rp-btn-hint">↵</span>
+          </div>
+        }
+      </button>
+    </div>
 
-      <!-- FULL RESULT STRING -->
-      @if (result) {
-        <div class="row g-3">
+    <!-- ── RESULT ── -->
+    @if (result) {
+      <div class="rp-result-spacer"></div>
 
-          <div class="col-12">
-            <div class="card shadow-sm">
+      <div class="rp-card rp-result-card">
+        <div class="rp-scanline"></div>
 
-              <div class="card-header bg-dark text-white">
-                Analysis Result
-              </div>
+        <div class="rp-result-header">
+          <div class="rp-result-header-dot rp-result-header-dot--red"></div>
+          <div class="rp-result-header-dot rp-result-header-dot--amber"></div>
+          <div class="rp-result-header-dot rp-result-header-dot--green"></div>
+          <span class="rp-result-header-title">Analysis Result</span>
+          <span class="rp-result-badge">✓ Complete</span>
+        </div>
 
-              <div class="card-body">
-
-                <markdown>
-                  {{ result }}
-                </markdown>
-
-              </div>
-
+        <!-- ── MATCH SCORE WIDGET ── -->
+        @if (matchScore !== null) {
+          <div class="rp-score-widget" [class]="scoreClass">
+            <div class="rp-score-left">
+              <span class="rp-score-label">Match Score</span>
+              <span class="rp-score-tier">{{ scoreLabel }}</span>
+            </div>
+            <div class="rp-score-right">
+              <span class="rp-score-number">{{ matchScore }}<span class="rp-score-pct">%</span></span>
+            </div>
+            <div class="rp-score-bar-track">
+              <div class="rp-score-bar-fill" [style.width.%]="matchScore"></div>
             </div>
           </div>
+        }
 
+        <div class="rp-result-body">
+          <markdown>{{ result }}</markdown>
         </div>
-      }
+      </div>
+    }
 
-    </div>
-  }
-
+  </div>
 </div>
